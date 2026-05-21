@@ -1,30 +1,30 @@
 ---
 name: med-research
-description: High-fidelity medical research and AI consensus engine. Standardized for 100% traceability and peer-review preparation.
+description: High-fidelity medical research and AI consensus engine. Standardized for tiered link priority and structural technical deep dives.
 ---
 
-# Medical Research Skill v6.0 (Final)
+# Medical Research Skill v6.5 (Final)
 
 ## Core Capabilities
-1. **Multi-Source Mining**: Simultaneously queries PubMed (clinical precision) and Google Scholar (academic breadth) using `pubmed_client.py` and `scholar_client.py`.
-2. **AI Consensus Engine**: Replicates Consensus.ai and Elicit.org logic to categorize claims (Supports/Opposes) and extract rigorous data definitions (N, Design, Outcome).
-3. **Smart Traceability**: Merged 'Reference Source (Access Type)' columns for one-click access to local/remote assets.
-4. **Academic Rigor (JCR)**: Mandatory verification of Journal Impact Factors (IF) and Quartiles (Q1-Q4).
+1. **Multi-Source Mining**: PubMed + Google Scholar integration via `scripts/`.
+2. **Consensus Engine**: Claim-based synthesis and evidence grading (v5.0).
+3. **Smart Traceability (v6.2 Priority)**: 
+    - **Best**: [PDF-Local] + [Web-View] dual links.
+    - **Good**: [PDF-Local] or [Web-View] single link.
+4. **arXiv Mandate**: Mandatory local archiving for all arXiv sources.
 
-## Environment Setup
-This skill requires Python 3.10+ and the following dependencies:
-1. Navigate to the skill's root directory.
-2. Run: `pip install -r requirements.txt`
-3. Ensure Playwright is installed: `playwright install chromium`
-
-## Reporting Standard
-- **Standard Matrix**: 9-column format with full-title enforcement.
+## Reporting Standard (v6.5 Bridge Standard)
+- **High-Density Matrix**: 9-10 column format with mandatory JCR Metrics and full-title enforcement.
+- **Structural Deep Dives**: Mandatory 'Educational Excerpts' below the matrix including:
+    - **Clinical Challenge (Why)**: Medical pain point.
+    - **Technical Logic (How)**: Architectural/Algorithmic explanation.
+    - **Project Mapping**: Application to specific datasets (Lead Apron/FHR).
+    - **Trace-Note**: 1:1 mapping to original figures/sections.
 - **Relative Pathing**: All local links use `../papers/` for directory portability.
-- **Technical Excerpts**: Extensive architectural deep dives below the matrix.
 
-## Standard Research Loop (GARP v6.0)
+## Standard Research Loop (GARP v6.5)
 1. **Initialize**: Check SNAPSHOT.json and set topic in PROGRESS.md.
-2. **Mine**: Execute multi-source mining via scripts. Mandatory: 10+ high-impact candidates.
-3. **Synthesize**: Generate Executive Matrix with JCR Metrics and Trace-Notes.
-4. **Reflect**: Apply 'Recursive Mirror' to evolve research questions towards 'Blue Ocean' niches.
-5. **Archive**: Download/Archive full-text (Level 1: PDF, Level 2: HTML, Level 3: Summary).
+2. **Mine**: Multi-source discovery (10+ candidates).
+3. **Synthesize**: Generate High-Density Executive Matrix.
+4. **Deep Dive**: Perform structural technical breakdown.
+5. **Archive**: High-fidelity download/web-archive fallback.
