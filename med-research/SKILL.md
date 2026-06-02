@@ -23,7 +23,7 @@ description: High-fidelity medical research and AI consensus engine. v9.5 implem
 7.  **實驗結果 (SOTA)**: 具體數據（Acc, F1, Precision）。
 8.  **數據流 Logic**: 從輸入到輸出的邏輯鏈結。
 9.  **瓶頸/開發難度**: 實作中可能遇到的技術坑位。
-10. **專案對標 (CYCH) / 研究利基**: 嘉基落地方案與未來發表點。
+10. **專案對標 / 研究利基**: 目標臨床落地方案與未來發表點。
 
 ## 3. 出版商感知與下載梯隊 (Download Ladder)
 (保持原有的 7 層下載階梯，但加入 JCR 權重篩選)...

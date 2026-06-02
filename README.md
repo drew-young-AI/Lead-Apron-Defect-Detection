@@ -1,7 +1,7 @@
 # Med-Research-Skill & Deep Research Knowledge Base (v10.0 Master)
 
 ## 🌟 Project Overview
-本專案為高階醫學研究與自動化深度挖掘知識庫，整合了臨床實戰規範與 AI 研究協議。專注於「胎心音分析 (CTG)」與「輻射防護 (Lead Apron)」兩大領域。
+本專案為高階醫學研究與自動化深度挖掘知識庫，整合了臨床實戰規範與 AI 研究協議。適用於各種臨床醫學、影像醫學、公共衛生及醫療管理領域的深度研究。
 
 Born in a clinical environment, this skill ensures that every research step adheres to the highest academic standards (JCR Q1/Q2) and follows a systematic protocol for evidence triangulation.
 
@@ -18,10 +18,10 @@ All research sessions follow the **General Autonomous Research Protocol**:
 2. **Mine (7-Tier Ladder)**：執行跨平台文獻採礦與實體 PDF 獲取。
 3. **Scrutinize**: 執行 JCR 門控與數據一致性審計。
 4. **Synthesize**: 生成 10 欄位高密度 Master 矩陣與技術剖析。
-5. **Project Mapping**: 針對嘉基 (CYCH) 臨床環境進行實體對標與發表利基分析。
+5. **Project Mapping**: 針對目標臨床環境進行實體對標與發表利基分析。
 
 ## 📂 Directory Structure
-- `Med Deep Research/reports/`: 存放各版本 Master 報告（最新為 v11.0）。
+- `Med Deep Research/reports/`: 存放各版本 Master 報告。
 - `Med Deep Research/papers/`: 存放實體 PDF 文獻。
 - `med-research/`: Skill 核心代碼與指令集 (`SKILL.md` v10.0)。
 - `GEMINI.md`: 項目憲法，定義最高決策權重。

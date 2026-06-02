@@ -41,12 +41,12 @@ class ResearchDiscovery:
 if __name__ == "__main__":
     discovery = ResearchDiscovery()
     
-    # 範例題目：鉛防護衣輻射洩露模擬與劑量評估
-    topic = "Radiation Leakage Simulation in Lead Aprons and clinician dose assessment"
+    # 範例題目：AI 在醫療影像中的最新應用與挑戰
+    topic = "Latest applications and challenges of AI in medical imaging"
     
     results = discovery.search_semantic_scholar(topic, limit=12)
     if results:
-        discovery.save_results(results, "research_leakage_simulation.json")
+        discovery.save_results(results, "discovery_results.json")
         print(f"\n成功找到 {len(results)} 篇相關論文！")
         for i, paper in enumerate(results):
             print(f"[{i+1}] {paper.get('title')} ({paper.get('year')})")
