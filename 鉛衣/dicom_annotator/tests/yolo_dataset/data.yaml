@@ -1,0 +1,7 @@
+path: D:/project/鉛衣/dicom_annotator/tests/yolo_dataset
+train: images/train
+val: images/val
+nc: 2
+names:
+  0: hole
+  1: crack

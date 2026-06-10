@@ -1,0 +1,386 @@
+[
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932076.535.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932076_535_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932076_535_1.dcm",
+    "annotation_count": 5,
+    "classes": [
+      "hole",
+      "crack"
+    ],
+    "patient_id": "20250724",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3216
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276735.216.1",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276735_216_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_900_1756276735_216_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "crack"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3252
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276735.167.1",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276735_167_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_900_1756276735_167_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "crack"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3270
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276725.880.1",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276725_880_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_900_1756276725_880_1.dcm",
+    "annotation_count": 0,
+    "classes": [],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3142
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276725.877.1",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276725_877_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_900_1756276725_877_1.dcm",
+    "annotation_count": 0,
+    "classes": [],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3158
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276725.898.1",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276725_898_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_900_1756276725_898_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3150
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.281.5310.172163492.1756369895.536487902",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_281_5310_172163492_1756369895_536487902.dcm",
+    "filename": "1_2_840_113619_2_281_5310_172163492_1756369895_536487902.dcm",
+    "annotation_count": 2,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3139
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.281.5310.172163492.1756369902.536489502",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_281_5310_172163492_1756369902_536489502.dcm",
+    "filename": "1_2_840_113619_2_281_5310_172163492_1756369902_536489502.dcm",
+    "annotation_count": 2,
+    "classes": [
+      "crack",
+      "hole"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3160
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932057.400.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932057_400_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932057_400_1.dcm",
+    "annotation_count": 2,
+    "classes": [
+      "hole",
+      "crack"
+    ],
+    "patient_id": "20250716",
+    "modality": "CT",
+    "image_size": [
+      835,
+      2804
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932057.397.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932057_397_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932057_397_1.dcm",
+    "annotation_count": 3,
+    "classes": [
+      "hole",
+      "crack"
+    ],
+    "patient_id": "20250716",
+    "modality": "CT",
+    "image_size": [
+      835,
+      2804
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932057.392.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932057_392_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932057_392_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "20250716",
+    "modality": "CT",
+    "image_size": [
+      835,
+      2804
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932076.261.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932076_261_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932076_261_1.dcm",
+    "annotation_count": 7,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "20250724",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3201
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.857.1746142762.684.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_857_1746142762_684_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_857_1746142762_684_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3231
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.857.1746142762.679.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_857_1746142762_679_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_857_1746142762_679_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3231
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932057.403.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932057_403_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932057_403_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "20250716",
+    "modality": "CT",
+    "image_size": [
+      835,
+      2804
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932076.492.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932076_492_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932076_492_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "crack"
+    ],
+    "patient_id": "20250724",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3219
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.857.1746142762.692.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_857_1746142762_692_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_857_1746142762_692_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3231
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.857.1746142762.689.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_857_1746142762_689_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_857_1746142762_689_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3231
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932076.501.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932076_501_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932076_501_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "crack"
+    ],
+    "patient_id": "20250724",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3219
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932076.544.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932076_544_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932076_544_1.dcm",
+    "annotation_count": 3,
+    "classes": [
+      "crack"
+    ],
+    "patient_id": "20250724",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3216
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932105.363.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932105_363_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932105_363_1.dcm",
+    "annotation_count": 10,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "2025",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3238
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932076.489.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932076_489_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_947_1751932076_489_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "crack"
+    ],
+    "patient_id": "20250724",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3219
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.857.1746142762.676.1",
+    "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_857_1746142762_676_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_857_1746142762_676_1.dcm",
+    "annotation_count": 1,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3231
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.826.0.1.3680043.8.498.49435987314266016458901508170274318858",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_826_0_1_3680043_8_498_49435987314266016458901508170274318858.dcm",
+    "filename": "1_2_826_0_1_3680043_8_498_49435987314266016458901508170274318858.dcm",
+    "annotation_count": 7,
+    "classes": [
+      "defect"
+    ],
+    "patient_id": "TEST123",
+    "modality": "OT",
+    "image_size": [
+      128,
+      128
+    ],
+    "saved_at": null
+  }
+]

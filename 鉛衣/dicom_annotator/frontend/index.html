@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <title>DICOM 缺陷標記</title>
+  <link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<div id="app">
+
+  <!-- ═ HEADER ════════════════════════════════════════════════════ -->
+  <header id="header">
+    <div class="brand"><span>🔬</span><span class="brand-name">缺陷標記</span>
+      <span id="dirty-dot" class="dirty-dot" style="display:none">●</span>
+    </div>
+    <div id="prog-area">
+      <div id="prog-bar"><div id="prog-fill"></div></div>
+      <span id="prog-text">0 / 0</span>
+    </div>
+    <div class="hdr-right">
+      <button id="save-btn" class="btn-save" disabled>💾 儲存</button>
+      <button id="delete-current-btn" class="btn-icon" title="刪除當前影像 (Shift+Delete)" style="color:#ff5252; margin-right: 4px;">🗑</button>
+      <button id="settings-btn" class="btn-icon" title="設定">⚙</button>
+    </div>
+  </header>
+
+  <!-- ═ BODY ══════════════════════════════════════════════════════ -->
+  <div id="body">
+
+    <!-- ── LEFT: 上傳 + 檔案清單 ──────────────────────────────── -->
+    <aside id="left">
+
+      <div id="drop-zone" class="dz">
+        <span class="dz-icon">📤</span>
+        <span class="dz-hint">拖曳 .dcm 或是包含 DICOM 的資料夾到此，或點此上傳</span>
+        <input id="upload-input" type="file" accept=".dcm,.DCM" multiple webkitdirectory>
+      </div>
+
+      <div id="upload-progress"></div>
+      <div id="dup-warn" class="dup-warn" style="display:none"></div>
+
+      <div id="file-list-wrap">
+        <div id="file-list-hdr" style="display:none">
+          <span id="file-count">0 張</span>
+          <span id="ann-badge" class="ann-badge">0 標完</span>
+          <button id="delete-selected-btn" class="btn-danger" style="display:none;margin-left:8px" title="刪除所選 (Shift+Delete)">🗑 刪除所選</button>
+        </div>
+        <div id="file-list">
+          <div class="list-hint">上傳 DICOM 開始標記</div>
+        </div>
+      </div>
+
+      <div id="nav-bar">
+        <button id="prev-btn" class="btn-nav" title="上一張 P">◀</button>
+        <span id="nav-lbl">–</span>
+        <button id="next-btn" class="btn-nav" title="下一張 N">▶</button>
+      </div>
+    </aside>
+
+    <!-- ── CENTER: 檢視器 ──────────────────────────────────────── -->
+    <main id="viewer">
+
+      <!-- 精簡工具列：只有視窗調整 + 縮放 -->
+      <div id="toolbar">
+        <div class="tb-group" id="ww-group">
+          <span class="tb-lbl">亮度 (<span id="wc-value">0</span>)</span>
+          <input id="wc-slider" type="range" min="-4096" max="8192" value="0" title="Window Center">
+          <span class="tb-lbl">對比 (<span id="ww-value">4096</span>)</span>
+          <input id="ww-slider" type="range" min="1" max="16384" value="4096" title="Window Width">
+          <button id="ww-reset" class="tb-btn" title="重置">⊙</button>
+        </div>
+        <div class="tb-sep"></div>
+        <div class="tb-group">
+          <button id="fit-btn"  class="tb-btn" title="符合視窗 F">⊡</button>
+          <button id="zin-btn"  class="tb-btn" title="放大 +">＋</button>
+          <button id="zout-btn" class="tb-btn" title="縮小 −">－</button>
+        </div>
+        <!-- 隱藏工具按鈕（僅鍵盤控制，介面不顯示） -->
+        <div style="display:none">
+          <button class="tool-btn" data-tool="box">Box</button>
+          <button class="tool-btn" data-tool="brush">Brush</button>
+          <button class="tool-btn" data-tool="pan">Pan</button>
+          <button class="tool-btn" data-tool="edit">Edit</button>
+          <select id="seg-method">
+            <option value="watershed">Watershed</option>
+            <option value="grabcut">GrabCut</option>
+            <option value="otsu">Otsu</option>
+            <option value="adaptive">Adaptive</option>
+            <option value="canny">Canny</option>
+            <option value="region_growing">Region growing</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- 畫布區 -->
+      <div id="canvas-wrap">
+        <canvas id="viewer-canvas"></canvas>
+
+        <!-- 空白提示 -->
+        <div id="canvas-msg" class="canvas-msg">上傳或點選 DICOM 影像</div>
+
+        <!-- 分割結果橫幅（pending） -->
+        <div id="pend-bar" class="pend-bar" style="display:none">
+          <span id="pend-txt">✨ 偵測完成</span>
+          <div class="pend-btns">
+            <button id="accept-btn" class="pb-ok">✓ 確認</button>
+            <button id="adjust-btn" class="pb-adjust" title="接受後直接進入頂點微調模式">✏ 微調頂點</button>
+            <button id="retry-btn"  class="pb-retry">↺ 換方法</button>
+            <button id="discard-btn"class="pb-discard">✕ 取消</button>
+          </div>
+        </div>
+
+        <!-- 步驟提示（低調，3 秒自動消失） -->
+        <div id="step-hint" class="step-hint" style="display:none"></div>
+
+        <!-- FAB 群組：模式選擇 + 主要操作按鈕 -->
+        <div id="fab-group" class="fab-group" style="display:none">
+          <div class="fab-modes">
+            <button id="fab-mode-box"   class="fab-mode active" title="矩形框選（適合區塊缺陷）">▣</button>
+            <button id="fab-mode-brush" class="fab-mode"        title="筆刷塗抹（適合線狀/細長缺陷）">🖌</button>
+          </div>
+          <button id="fab" class="fab">＋ 標記缺陷</button>
+        </div>
+      </div>
+
+      <!-- 狀態列 -->
+      <div id="sb">
+        <span id="sb-zoom">100%</span>
+        <span class="sb-dot">·</span>
+        <span id="sb-pos">x:– y:–</span>
+        <span class="sb-dot">·</span>
+        <span id="sb-info">未載入</span>
+      </div>
+    </main>
+
+    <!-- ── RIGHT: 標註清單 ─────────────────────────────────────── -->
+    <aside id="right">
+
+      <div class="rp-top">
+        <label class="rp-lbl">缺陷類別</label>
+        <select id="defect-class">
+          <option value="hole">破洞（圓形）</option>
+          <option value="crack">裂痕（線條型）</option>
+        </select>
+      </div>
+
+      <div class="rp-mid">
+        <div class="rp-lbl-row">
+          <span class="rp-lbl">已標記</span>
+          <span id="ann-count" class="ann-count">0</span>
+          <button id="del-all-btn" class="del-all-btn" style="display:none" title="清除全部">全刪</button>
+        </div>
+        <ul id="ann-list"><li class="ann-empty">尚未標記任何缺陷</li></ul>
+      </div>
+      
+      <div class="rp-notes">
+        <label class="rp-lbl">影像備註 (協同提醒)</label>
+        <textarea id="image-notes" placeholder="在此輸入備註，讓其他協同人員可以相互提醒..."></textarea>
+      </div>
+
+    </aside>
+  </div><!-- /body -->
+
+  <!-- ═ 設定抽屜 ═══════════════════════════════════════════════ -->
+  <div id="backdrop" class="backdrop" style="display:none" onclick="App.closeDrawer()"></div>
+
+  <div id="drawer" class="drawer" style="display:none">
+    <div class="drawer-hdr">
+      <span id="drawer-title">設定</span>
+      <button onclick="App.closeDrawer()" class="drawer-close">✕</button>
+    </div>
+    <div class="drawer-body" id="drawer-body"></div>
+  </div>
+
+  <div id="toast" class="toast" style="display:none"></div>
+</div>
+
+<script src="js/api.js"></script>
+<script src="js/viewer.js"></script>
+<script src="js/tools.js"></script>
+<script src="js/annotations.js"></script>
+<script src="js/main.js"></script>
+</body>
+</html>

@@ -1,0 +1,85 @@
+{
+  "annotations": [
+    {
+      "id": "ann_1781061938314_24",
+      "class": "hole",
+      "type": "polygon",
+      "bbox_x": 578,
+      "bbox_y": 923,
+      "bbox_w": 21,
+      "bbox_h": 19,
+      "polygon": [
+        [
+          593,
+          932
+        ],
+        [
+          590,
+          931
+        ],
+        [
+          586,
+          931
+        ],
+        [
+          584,
+          933
+        ],
+        [
+          584,
+          936
+        ],
+        [
+          585,
+          939
+        ],
+        [
+          589,
+          940
+        ],
+        [
+          593,
+          937
+        ]
+      ],
+      "bbox": [
+        578,
+        923,
+        21,
+        19
+      ],
+      "auto": true,
+      "method": "watershed",
+      "created": "2026-06-10T03:25:38.314Z",
+      "modified": "2026-06-10T03:25:53.490Z"
+    }
+  ],
+  "image_path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276725_898_1.dcm",
+  "dicom_meta": {
+    "PatientID": "2025++1+",
+    "StudyInstanceUID": "1.2.840.113619.2.405.3.279730978.900.1756276725.830",
+    "SeriesInstanceUID": "1.2.840.113619.2.405.3.279730978.900.1756276725.896",
+    "SOPInstanceUID": "1.2.840.113619.2.405.3.279730978.900.1756276725.898.1",
+    "Modality": "CT",
+    "WindowCenter": 50,
+    "WindowWidth": 500,
+    "PhotometricInterpretation": "MONOCHROME2",
+    "Rows": 3150,
+    "Columns": 835,
+    "PixelSpacing": [
+      0.545455,
+      0.634731
+    ],
+    "BitsStored": 16
+  },
+  "image_info": {
+    "width": 835,
+    "height": 3150,
+    "wc": 50,
+    "ww": 500
+  },
+  "file_id": "1.2.840.113619.2.405.3.279730978.900.1756276725.898.1",
+  "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276725.898.1",
+  "version": 2,
+  "saved_at": "2026-06-10T11:25:55"
+}

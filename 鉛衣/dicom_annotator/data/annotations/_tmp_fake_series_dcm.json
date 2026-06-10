@@ -1,0 +1,53 @@
+{
+  "annotations": [
+    {
+      "id": "ann_test_1",
+      "class": "defect",
+      "type": "polygon",
+      "bbox_x": 100,
+      "bbox_y": 100,
+      "bbox_w": 50,
+      "bbox_h": 50,
+      "polygon": [
+        [
+          100,
+          100
+        ],
+        [
+          150,
+          100
+        ],
+        [
+          150,
+          150
+        ],
+        [
+          100,
+          150
+        ]
+      ],
+      "bbox": [
+        100,
+        100,
+        50,
+        50
+      ],
+      "auto": false,
+      "method": null,
+      "created": "2026-06-09T16:32:28",
+      "modified": ""
+    }
+  ],
+  "image_path": "/data/fake.dcm",
+  "dicom_meta": {},
+  "image_info": {
+    "width": 512,
+    "height": 512,
+    "wc": 0,
+    "ww": 4096
+  },
+  "file_id": "/tmp/fake_series.dcm",
+  "sop_uid": "/tmp/fake_series.dcm",
+  "version": 2,
+  "saved_at": "2026-06-09T16:32:28"
+}

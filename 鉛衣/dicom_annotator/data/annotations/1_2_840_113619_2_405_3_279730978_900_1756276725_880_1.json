@@ -1,0 +1,32 @@
+{
+  "annotations": [],
+  "image_path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276725_880_1.dcm",
+  "dicom_meta": {
+    "PatientID": "2025++1+",
+    "StudyInstanceUID": "1.2.840.113619.2.405.3.279730978.900.1756276725.830",
+    "SeriesInstanceUID": "1.2.840.113619.2.405.3.279730978.900.1756276725.878",
+    "SOPInstanceUID": "1.2.840.113619.2.405.3.279730978.900.1756276725.880.1",
+    "Modality": "CT",
+    "WindowCenter": 50,
+    "WindowWidth": 500,
+    "PhotometricInterpretation": "MONOCHROME2",
+    "Rows": 3142,
+    "Columns": 835,
+    "PixelSpacing": [
+      0.545455,
+      0.634731
+    ],
+    "BitsStored": 16
+  },
+  "image_info": {
+    "width": 835,
+    "height": 3142,
+    "wc": 50,
+    "ww": 500
+  },
+  "notes": "破損明顯 人員可輕易辨別 不需要標記",
+  "file_id": "1.2.840.113619.2.405.3.279730978.900.1756276725.880.1",
+  "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276725.880.1",
+  "version": 3,
+  "saved_at": "2026-06-10T11:28:52"
+}

@@ -1,0 +1,69 @@
+{
+  "annotations": [
+    {
+      "id": "ann_1781061304459_14",
+      "class": "hole",
+      "type": "polygon",
+      "bbox_x": 308,
+      "bbox_y": 1516,
+      "bbox_w": 67,
+      "bbox_h": 71,
+      "polygon": [
+        [
+          339,
+          1546
+        ],
+        [
+          338,
+          1556
+        ],
+        [
+          344,
+          1557
+        ],
+        [
+          345,
+          1547
+        ]
+      ],
+      "bbox": [
+        308,
+        1516,
+        67,
+        71
+      ],
+      "auto": true,
+      "method": "adaptive",
+      "created": "2026-06-10T03:15:04.459Z",
+      "modified": "2026-06-10T03:15:04.459Z"
+    }
+  ],
+  "image_path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932057_392_1.dcm",
+  "dicom_meta": {
+    "PatientID": "20250716",
+    "StudyInstanceUID": "1.2.840.113619.2.405.3.279730978.947.1751932057.383",
+    "SeriesInstanceUID": "1.2.840.113619.2.405.3.279730978.947.1751932057.386",
+    "SOPInstanceUID": "1.2.840.113619.2.405.3.279730978.947.1751932057.392.1",
+    "Modality": "CT",
+    "WindowCenter": 50,
+    "WindowWidth": 500,
+    "PhotometricInterpretation": "MONOCHROME2",
+    "Rows": 2804,
+    "Columns": 835,
+    "PixelSpacing": [
+      0.545455,
+      0.634731
+    ],
+    "BitsStored": 16
+  },
+  "image_info": {
+    "width": 835,
+    "height": 2804,
+    "wc": 50,
+    "ww": 500
+  },
+  "file_id": "1.2.840.113619.2.405.3.279730978.947.1751932057.392.1",
+  "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932057.392.1",
+  "version": 2,
+  "saved_at": "2026-06-10T11:15:08"
+}
