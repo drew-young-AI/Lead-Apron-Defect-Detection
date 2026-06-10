@@ -163,6 +163,7 @@ class AppController {
       } catch(e) { st.textContent='✗'; st.className='upl-err'; row.title=e.message; }
     }
     this._updateCounts();
+    await this._markAnnotated();
     setTimeout(()=>{ prog.innerHTML=''; }, 3500);
     const toOpen = lastGood || (dupCount && dupPath);
     if (toOpen) {
@@ -204,6 +205,7 @@ class AppController {
       const {files} = await API.listUploaded();
       (files||[]).forEach(f=>this._addFile(f.path, '', f.original_name));
       this._updateCounts();
+      await this._markAnnotated();
     } catch {}
   }
 

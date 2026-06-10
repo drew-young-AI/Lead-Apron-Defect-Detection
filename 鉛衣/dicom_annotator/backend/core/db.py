@@ -79,6 +79,32 @@ def init_db() -> None:
         except sqlite3.OperationalError:
             pass
         con.commit()
+
+        # 一次性升級：將現有 JSON 檔案中的標註數量與備註狀態同步至 SQLite
+        try:
+            annotations_dir = DB_PATH.parent / "annotations"
+            if annotations_dir.exists():
+                for p in annotations_dir.glob("*.json"):
+                    try:
+                        import json
+                        doc = json.loads(p.read_text(encoding="utf-8"))
+                        fid = doc.get("file_id") or doc.get("sop_uid")
+                        if fid and doc.get("annotations"):
+                            anns = doc.get("annotations", [])
+                            count = len(anns)
+                            has_notes = 1 if doc.get("notes") else 0
+                            con.execute("""
+                                INSERT INTO annotations(file_id, version, saved_at, annotation_count, has_notes)
+                                VALUES(?,?,?,?,?)
+                                ON CONFLICT(file_id) DO UPDATE SET
+                                    annotation_count=excluded.annotation_count,
+                                    has_notes=excluded.has_notes
+                            """, (fid, doc.get("version", 1), doc.get("saved_at", ""), count, has_notes))
+                    except Exception:
+                        pass
+                con.commit()
+        except Exception as e:
+            print(f"[db] Migration error: {e}")
             
         con.close()
 
