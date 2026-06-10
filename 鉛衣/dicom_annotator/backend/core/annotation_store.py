@@ -85,9 +85,10 @@ def save(file_id: str, data: Dict[str, Any]) -> bool:
 
         # Keep SQLite annotation index in sync
         anns = data.get("annotations", [])
-        if anns:
+        notes = data.get("notes", "")
+        if anns or notes:
             count = len(anns)
-            has_notes = 1 if data.get("notes") else 0
+            has_notes = 1 if notes else 0
             db.upsert_annotation(file_id, version, saved_at, count, has_notes)
         else:
             db.delete_annotation_record(file_id)
@@ -149,11 +150,12 @@ def list_annotated() -> List[str]:
         try:
             doc = json.loads(p.read_text(encoding="utf-8"))
             fid = doc.get("file_id") or doc.get("sop_uid")
-            if fid and doc.get("annotations"):
+            anns = doc.get("annotations", [])
+            notes = doc.get("notes", "")
+            if fid and (anns or notes):
                 result.append(fid)
-                anns = doc.get("annotations", [])
                 count = len(anns)
-                has_notes = 1 if doc.get("notes") else 0
+                has_notes = 1 if notes else 0
                 db.upsert_annotation(
                     fid,
                     doc.get("version", 1),

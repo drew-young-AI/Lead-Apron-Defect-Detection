@@ -885,6 +885,70 @@ class AppController {
           break;
       }
     });
+
+    // Resizable Panels Initialization
+    const leftPanel = document.getElementById('left');
+    const rightPanel = document.getElementById('right');
+    const leftResizer = document.getElementById('left-resizer');
+    const rightResizer = document.getElementById('right-resizer');
+    
+    let startX, startWidth;
+    
+    if (leftResizer && leftPanel) {
+      leftResizer.addEventListener('pointerdown', (e) => {
+        startX = e.clientX;
+        startWidth = leftPanel.getBoundingClientRect().width;
+        leftResizer.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        
+        const onPointerMove = (moveEvt) => {
+          const deltaX = moveEvt.clientX - startX;
+          const newWidth = Math.max(180, Math.min(500, startWidth + deltaX));
+          leftPanel.style.width = `${newWidth}px`;
+          this.viewer.fitToScreen?.();
+        };
+        
+        const onPointerUp = () => {
+          leftResizer.classList.remove('dragging');
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+          document.removeEventListener('pointermove', onPointerMove);
+          document.removeEventListener('pointerup', onPointerUp);
+        };
+        
+        document.addEventListener('pointermove', onPointerMove);
+        document.addEventListener('pointerup', onPointerUp);
+      });
+    }
+    
+    if (rightResizer && rightPanel) {
+      rightResizer.addEventListener('pointerdown', (e) => {
+        startX = e.clientX;
+        startWidth = rightPanel.getBoundingClientRect().width;
+        rightResizer.classList.add('dragging');
+        document.body.style.cursor = 'col-resize';
+        document.body.style.userSelect = 'none';
+        
+        const onPointerMove = (moveEvt) => {
+          const deltaX = startX - moveEvt.clientX;
+          const newWidth = Math.max(180, Math.min(500, startWidth + deltaX));
+          rightPanel.style.width = `${newWidth}px`;
+          this.viewer.fitToScreen?.();
+        };
+        
+        const onPointerUp = () => {
+          rightResizer.classList.remove('dragging');
+          document.body.style.cursor = '';
+          document.body.style.userSelect = '';
+          document.removeEventListener('pointermove', onPointerMove);
+          document.removeEventListener('pointerup', onPointerUp);
+        };
+        
+        document.addEventListener('pointermove', onPointerMove);
+        document.addEventListener('pointerup', onPointerUp);
+      });
+    }
   }
 
   _activateTool(name) {

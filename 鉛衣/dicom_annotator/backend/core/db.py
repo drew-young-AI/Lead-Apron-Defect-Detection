@@ -89,10 +89,11 @@ def init_db() -> None:
                         import json
                         doc = json.loads(p.read_text(encoding="utf-8"))
                         fid = doc.get("file_id") or doc.get("sop_uid")
-                        if fid and doc.get("annotations"):
-                            anns = doc.get("annotations", [])
+                        anns = doc.get("annotations", [])
+                        notes = doc.get("notes", "")
+                        if fid and (anns or notes):
                             count = len(anns)
-                            has_notes = 1 if doc.get("notes") else 0
+                            has_notes = 1 if notes else 0
                             con.execute("""
                                 INSERT INTO annotations(file_id, version, saved_at, annotation_count, has_notes)
                                 VALUES(?,?,?,?,?)
