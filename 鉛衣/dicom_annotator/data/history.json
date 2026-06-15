@@ -1,5 +1,38 @@
 [
   {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276735.167.1",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276735_167_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_900_1756276735_167_1.dcm",
+    "annotation_count": 3,
+    "classes": [
+      "crack",
+      "defect"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3270
+    ],
+    "saved_at": null
+  },
+  {
+    "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276725.877.1",
+    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276725_877_1.dcm",
+    "filename": "1_2_840_113619_2_405_3_279730978_900_1756276725_877_1.dcm",
+    "annotation_count": 2,
+    "classes": [
+      "hole"
+    ],
+    "patient_id": "2025++1+",
+    "modality": "CT",
+    "image_size": [
+      835,
+      3158
+    ],
+    "saved_at": null
+  },
+  {
     "sop_uid": "1.2.840.113619.2.405.3.279730978.947.1751932076.535.1",
     "path": "backend/uploads/1_2_840_113619_2_405_3_279730978_947_1751932076_535_1.dcm",
     "filename": "1_2_840_113619_2_405_3_279730978_947_1751932076_535_1.dcm",
@@ -33,22 +66,6 @@
     "saved_at": null
   },
   {
-    "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276735.167.1",
-    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276735_167_1.dcm",
-    "filename": "1_2_840_113619_2_405_3_279730978_900_1756276735_167_1.dcm",
-    "annotation_count": 1,
-    "classes": [
-      "crack"
-    ],
-    "patient_id": "2025++1+",
-    "modality": "CT",
-    "image_size": [
-      835,
-      3270
-    ],
-    "saved_at": null
-  },
-  {
     "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276725.880.1",
     "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276725_880_1.dcm",
     "filename": "1_2_840_113619_2_405_3_279730978_900_1756276725_880_1.dcm",
@@ -59,20 +76,6 @@
     "image_size": [
       835,
       3142
-    ],
-    "saved_at": null
-  },
-  {
-    "sop_uid": "1.2.840.113619.2.405.3.279730978.900.1756276725.877.1",
-    "path": "/Users/drew/ENV/lead_protection/dicom_annotator/backend/uploads/1_2_840_113619_2_405_3_279730978_900_1756276725_877_1.dcm",
-    "filename": "1_2_840_113619_2_405_3_279730978_900_1756276725_877_1.dcm",
-    "annotation_count": 0,
-    "classes": [],
-    "patient_id": "2025++1+",
-    "modality": "CT",
-    "image_size": [
-      835,
-      3158
     ],
     "saved_at": null
   },

@@ -87,6 +87,10 @@ async def upload_dicom(file: UploadFile = File(...)):
     """
     UPLOAD_DIR.mkdir(parents=True, exist_ok=True)
 
+    filename = file.filename if file else ""
+    if not filename.lower().endswith((".dcm", ".dicom")):
+        raise HTTPException(400, "Only DICOM files (.dcm, .dicom) are allowed. JPEG, PNG, BMP images are not supported.")
+
     raw = await file.read()
     if not raw:
         raise HTTPException(400, "Empty file")

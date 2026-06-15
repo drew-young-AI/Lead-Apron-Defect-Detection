@@ -57,12 +57,60 @@ class DicomReader:
             return float(v)
 
         ps = getattr(ds, "PixelSpacing", [1.0, 1.0])
+
+        # ── 科別對照表（StudyDescription → 中文科別）────────────────────
+        DEPT_MAP = {
+            "NM":     "核醫科",
+            "ORTH":   "骨科",
+            "Orth":   "骨科",
+            "DENTAL": "牙科",
+            "OP":     "門診手術",
+            "CAD":    "鉛衣盤查",
+            "CT":     "影像科",
+            "MR":     "磁振造影",
+            "CARDIO": "心血管科",
+        }
+        study_desc = tag("StudyDescription")
+        dept_cn = DEPT_MAP.get(study_desc, study_desc or "")
+
         metadata = {
+            # ── 基本識別 ──────────────────────────────────────────────
             "PatientID":         tag("PatientID"),
+            "PatientName":       tag("PatientName"),
             "StudyInstanceUID":  tag("StudyInstanceUID"),
             "SeriesInstanceUID": tag("SeriesInstanceUID"),
             "SOPInstanceUID":    tag("SOPInstanceUID"),
             "Modality":          tag("Modality"),
+
+            # ── 時間資訊 ──────────────────────────────────────────────
+            "StudyDate":         tag("StudyDate"),
+            "SeriesDate":        tag("SeriesDate"),
+            "AcquisitionDate":   tag("AcquisitionDate"),
+            "ContentDate":       tag("ContentDate"),
+
+            # ── 描述 / 科別 ───────────────────────────────────────────
+            "StudyDescription":  study_desc,
+            "DepartmentCN":      dept_cn,
+            "SeriesDescription": tag("SeriesDescription"),
+            "ProtocolName":      tag("ProtocolName"),
+            "StudyID":           tag("StudyID"),
+            "SeriesNumber":      tag("SeriesNumber"),
+            "InstanceNumber":    tag("InstanceNumber"),
+            "InstitutionName":   tag("InstitutionName"),
+
+            # ── 掃描參數 ──────────────────────────────────────────────
+            "KVP":               tag("KVP"),
+            "XRayTubeCurrent":   tag("XRayTubeCurrent"),
+            "Exposure":          tag("Exposure"),
+            "ExposureTime":      tag("ExposureTime"),
+            "FilterType":        tag("FilterType"),
+            "ConvolutionKernel": tag("ConvolutionKernel"),
+            "ScanOptions":       tag("ScanOptions"),
+            "SliceThickness":    tag("SliceThickness"),
+            "SliceLocation":     tag("SliceLocation"),
+            "BodyPartExamined":  tag("BodyPartExamined"),
+
+            # ── 視窗 / 影像 ───────────────────────────────────────────
             "WindowCenter":      wc,
             "WindowWidth":       ww,
             "PhotometricInterpretation": photo,
@@ -70,7 +118,52 @@ class DicomReader:
             "Columns": int(getattr(ds, "Columns", raw.shape[1])),
             "PixelSpacing": [float(ps[0]), float(ps[1])],
             "BitsStored": int(getattr(ds, "BitsStored", 12)),
+            "RescaleType":  tag("RescaleType"),
         }
+
+        # ── 關聯 Excel 鉛衣台帳資訊 ────────────────────────────────────
+        lead_part_type = "–"
+        lead_property_no = "–"
+        lead_status = "–"
+        
+        master_json_path = Path(__file__).parent.parent.parent / "data" / "lead_master.json"
+        if master_json_path.exists():
+            try:
+                import json
+                with open(master_json_path, "r", encoding="utf-8") as f:
+                    master_map = json.load(f)
+                
+                series_desc = tag("SeriesDescription")
+                matched_data = None
+                
+                # 1. 直接匹配
+                if series_desc in master_map:
+                    matched_data = master_map[series_desc]
+                else:
+                    # 2. 依 "+" 拆分匹配
+                    parts = [p.strip() for p in series_desc.split("+") if p.strip()]
+                    for p in parts:
+                        if p in master_map:
+                            matched_data = master_map[p]
+                            break
+                        # 3. 模糊部分包含匹配
+                        for k in master_map:
+                            if k.lower() in p.lower() or p.lower() in k.lower():
+                                matched_data = master_map[k]
+                                break
+                        if matched_data:
+                            break
+                            
+                if matched_data:
+                    lead_part_type = matched_data.get("part_type", "–")
+                    lead_property_no = matched_data.get("property_no", "–")
+                    lead_status = matched_data.get("status", "–")
+            except Exception as e:
+                print(f"Error matching lead master: {e}")
+                
+        metadata["LeadPartType"] = lead_part_type
+        metadata["LeadPropertyNo"] = lead_property_no
+        metadata["LeadStatus"] = lead_status
 
         return {"pixel_array": raw, "metadata": metadata}
 

@@ -135,9 +135,9 @@
     </main>
     <div id="right-resizer" class="resizer"></div>
 
-    <!-- ── RIGHT: 標註清單 ─────────────────────────────────────── -->
     <aside id="right">
 
+      <!-- ① 缺陷類別選擇 -->
       <div class="rp-top">
         <label class="rp-lbl">缺陷類別</label>
         <select id="defect-class">
@@ -146,6 +146,58 @@
         </select>
       </div>
 
+      <!-- ② 鉛衣資訊 Panel（折疊） -->
+      <details class="info-panel" id="apron-info-panel" open>
+        <summary class="info-panel-hdr">
+          <span>🛡 鉛衣資訊</span><span class="panel-chevron">▾</span>
+        </summary>
+        <div class="info-panel-body" id="apron-info-body">
+          <div class="info-row"><span class="info-key">鉛衣批次</span><span class="info-val" id="meta-patient-name">–</span></div>
+          <div class="info-row"><span class="info-key">件　　號</span><span class="info-val" id="meta-series-desc">–</span></div>
+          <div class="info-row"><span class="info-key">管理編號</span><span class="info-val" id="meta-lead-property-no" style="font-weight:bold;color:#ffca28">–</span></div>
+          <div class="info-row"><span class="info-key">鉛衣部位</span><span class="info-val" id="meta-lead-part-type" style="color:#66bb6a">–</span></div>
+          <div class="info-row"><span class="info-key">檢測狀態</span><span class="info-val" id="meta-lead-status">–</span></div>
+          <div class="info-row"><span class="info-key">掃描日期</span><span class="info-val" id="meta-study-date">–</span></div>
+          <div class="info-row"><span class="info-key">協議版本</span><span class="info-val" id="meta-protocol">–</span></div>
+          <div class="info-row"><span class="info-key">像素大小</span><span class="info-val" id="meta-pixel-spacing">–</span></div>
+        </div>
+      </details>
+
+      <!-- ③ 掃描參數 Panel（折疊） -->
+      <details class="info-panel" id="scan-params-panel">
+        <summary class="info-panel-hdr">
+          <span>⚡ 掃描參數</span><span class="panel-chevron">▾</span>
+        </summary>
+        <div class="info-panel-body" id="scan-params-body">
+          <div class="info-row"><span class="info-key">管電壓 kVp</span><span class="info-val" id="meta-kvp">–</span></div>
+          <div class="info-row"><span class="info-key">管電流 mA</span><span class="info-val" id="meta-ma">–</span></div>
+          <div class="info-row"><span class="info-key">曝光量 mAs</span><span class="info-val" id="meta-exposure">–</span></div>
+          <div class="info-row"><span class="info-key">重建核</span><span class="info-val" id="meta-kernel">–</span></div>
+          <div class="info-row"><span class="info-key">掃描模式</span><span class="info-val" id="meta-scan-opt">–</span></div>
+          <div class="info-row"><span class="info-key">影像尺寸</span><span class="info-val" id="meta-img-size">–</span></div>
+        </div>
+      </details>
+
+      <!-- ④ HU 密度熱圖 Panel（折疊） -->
+      <details class="info-panel" id="hu-panel">
+        <summary class="info-panel-hdr">
+          <span>🌡 HU 密度分析</span><span class="panel-chevron">▾</span>
+        </summary>
+        <div class="info-panel-body">
+          <canvas id="hu-heatmap" class="hu-canvas"></canvas>
+          <div class="info-row" style="margin-top:4px">
+            <span class="info-key">RescaleType</span>
+            <span class="info-val" id="meta-rescale-type">–</span>
+          </div>
+          <div class="hu-legend">
+            <span class="hu-leg-lo">🔴 高密度（鉛）</span>
+            <div class="hu-grad" style="background:linear-gradient(to right,#c62828,#ff7043,#ffca28,#66bb6a,#0288d1,#1a237e)"></div>
+            <span class="hu-leg-hi">🔵 低密度/破洞</span>
+          </div>
+        </div>
+      </details>
+
+      <!-- ⑤ 標記清單 -->
       <div class="rp-mid">
         <div class="rp-lbl-row">
           <span class="rp-lbl">已標記</span>
@@ -154,7 +206,8 @@
         </div>
         <ul id="ann-list"><li class="ann-empty">尚未標記任何缺陷</li></ul>
       </div>
-      
+
+      <!-- ⑥ 影像備註 -->
       <div class="rp-notes">
         <label class="rp-lbl">影像備註 (協同提醒)</label>
         <textarea id="image-notes" placeholder="在此輸入備註，讓其他協同人員可以相互提醒..."></textarea>

@@ -178,10 +178,15 @@ class AppController {
     const el    = document.createElement('div');
     el.className = 'fi'; el.dataset.path = path;
     const dot  = Object.assign(document.createElement('span'),{className:'fi-dot'+(flag==='dup'?' dup':'')});
-    const name = Object.assign(document.createElement('span'),{className:'fi-name',textContent:fname,title:path});
+    // 兩行標籤容器
+    const labelWrap = document.createElement('div');
+    labelWrap.className = 'fi-label-wrap';
+    const idLine  = Object.assign(document.createElement('span'),{className:'fi-label-id',textContent:fname,title:path});
+    const subLine = Object.assign(document.createElement('span'),{className:'fi-label-sub',textContent:''});
+    labelWrap.append(idLine, subLine);
     const countSpan = Object.assign(document.createElement('span'), {className:'fi-ann-count', textContent:'0'});
     const noteSpan = Object.assign(document.createElement('span'), {className:'fi-note-status', textContent:''});
-    el.append(dot, name, countSpan, noteSpan);
+    el.append(dot, labelWrap, countSpan, noteSpan);
     if (flag==='dup') el.append(Object.assign(document.createElement('span'),{className:'fi-dup',textContent:'重複'}));
     el.addEventListener('click', (e) => {
       if (e.shiftKey || e.ctrlKey || e.metaKey) {
@@ -198,6 +203,46 @@ class AppController {
     document.getElementById('file-list-hdr').style.display = 'flex';
     this.files.push({path, el});
     this._updateNavLabel();
+    return {path, el};
+  }
+
+  /** 在取得 metadata 後更新左側列表的 ID 行 & 副標題行 */
+  _updateFileLabel(path, meta) {
+    const entry = this.files.find(f => f.path === path);
+    if (!entry) return;
+    const el = entry.el;
+    
+    // 1. 主 ID 行：[Series Description] [管理編號] (Study Description)
+    const seriesDesc = meta.SeriesDescription && meta.SeriesDescription !== '–' ? meta.SeriesDescription : '';
+    const studyDesc = meta.StudyDescription && meta.StudyDescription !== '–' ? meta.StudyDescription : '';
+    const propNo = meta.LeadPropertyNo && meta.LeadPropertyNo !== '–' ? meta.LeadPropertyNo : '';
+    
+    let primaryText = '';
+    let leadPart = seriesDesc;
+    if (propNo) {
+      leadPart = leadPart ? `${leadPart} ${propNo}` : propNo;
+    }
+    
+    if (leadPart && studyDesc) {
+      primaryText = `${leadPart} (${studyDesc})`;
+    } else {
+      primaryText = leadPart || studyDesc || meta.PatientID || meta.StudyID || path.split('/').pop().split('\\').pop() || '';
+    }
+    
+    const idEl = el.querySelector('.fi-label-id');
+    if (idEl && primaryText) { idEl.textContent = primaryText; idEl.title = path; }
+    
+    // 2. 副標題行：只換上 "Series Date"
+    const rawDate = meta.SeriesDate || meta.StudyDate || meta.AcquisitionDate || '';
+    let dateStr = '–';
+    if (rawDate && rawDate.length === 8) {
+      dateStr = `${rawDate.slice(0,4)}-${rawDate.slice(4,6)}-${rawDate.slice(6,8)}`;
+    } else if (rawDate) {
+      dateStr = rawDate;
+    }
+    
+    const subEl = el.querySelector('.fi-label-sub');
+    if (subEl) subEl.textContent = dateStr;
   }
 
   async _loadUploaded() {
@@ -249,6 +294,9 @@ class AppController {
       document.getElementById('pend-bar').style.display='none';
       document.getElementById('accept-btn').disabled=true;
 
+      this._updateFileLabel(path, meta);
+      this._updateMetaPanel(meta);
+      this._drawHuHeatmap(meta);
       const pid=meta.PatientID?`${meta.PatientID}  `:'';
       document.getElementById('sb-info').textContent=`${pid}${meta.Modality||''}  ${meta.Columns}×${meta.Rows}`;
       document.getElementById('save-btn').disabled=false;
@@ -1117,6 +1165,162 @@ class AppController {
   }
 
   // ══════════════════════════════════════════════════════ HELPERS ════
+
+  /** 右側 Info Panels 全量更新 */
+  _updateMetaPanel(meta) {
+    const set = (id, val) => { const el=document.getElementById(id); if(el) el.textContent=(val&&String(val).trim())||'–'; };
+
+    // ── 鉛衣資訊 ──────────────────────────────────────────────────
+    // PatientName → 鉛衣批次（原料/批號），實務上通常為批次代碼
+    set('meta-patient-name', meta.PatientName);
+    // SeriesDescription → 件號
+    set('meta-series-desc', meta.SeriesDescription);
+    // 關聯的 Excel 鉛衣管理屬性
+    set('meta-lead-property-no', meta.LeadPropertyNo);
+    set('meta-lead-part-type', meta.LeadPartType);
+    set('meta-lead-status', meta.LeadStatus);
+    // 掃描日期（格式化 YYYYMMDD → YYYY-MM-DD）
+    const rawDate = meta.SeriesDate || meta.StudyDate || meta.AcquisitionDate || '';
+    let dispDate = rawDate;
+    if (rawDate && rawDate.length === 8)
+      dispDate = `${rawDate.slice(0,4)}-${rawDate.slice(4,6)}-${rawDate.slice(6,8)}`;
+    set('meta-study-date', dispDate);
+    // 協議版本（ProtocolName 優先，次選 StudyID）
+    set('meta-protocol', meta.ProtocolName || meta.StudyID);
+    // Pixel Spacing → 格式：row mm × col mm
+    const ps = meta.PixelSpacing;
+    if (ps && ps.length >= 2) {
+      set('meta-pixel-spacing', `${Number(ps[0]).toFixed(4)} × ${Number(ps[1]).toFixed(4)} mm`);
+    } else {
+      set('meta-pixel-spacing', '–');
+    }
+
+    // ── 掃描參數 ──────────────────────────────────────────────────
+    const kvp = meta.KVP ? `${meta.KVP} kVp` : '';
+    set('meta-kvp', kvp);
+    const ma = meta.XRayTubeCurrent ? `${meta.XRayTubeCurrent} mA` : '';
+    set('meta-ma', ma);
+    const mAs = meta.Exposure ? `${meta.Exposure} mAs` : '';
+    set('meta-exposure', mAs);
+    set('meta-kernel', meta.ConvolutionKernel || meta.FilterType);
+    set('meta-scan-opt', meta.ScanOptions);
+    // 影像尺寸 + 切片厚度
+    const sz = (meta.Columns && meta.Rows) ? `${meta.Columns} × ${meta.Rows} px` : '';
+    const th = meta.SliceThickness ? ` ｜ ${Number(meta.SliceThickness).toFixed(1)} mm` : '';
+    set('meta-img-size', sz + th);
+    // RescaleType（HU panel）
+    set('meta-rescale-type', meta.RescaleType);
+  }
+
+  /**
+   * 繪製 HU 密度分析熱圖（直方圖形式）。
+   * 從 viewer canvas 取得已渲染的灰階像素值（0-255），計算其分布後
+   * 以冷→暖色映射顯示，讓低密度（氣腔）與高密度（鉛/金屬）一目了然。
+   * 等待 100ms 讓 viewer 有機會先完成渲染。
+   */
+  _drawHuHeatmap(meta) {
+    setTimeout(() => this._drawHuHeatmapNow(meta), 150);
+  }
+
+  _drawHuHeatmapNow(meta) {
+    const huCanvas = document.getElementById('hu-heatmap');
+    if (!huCanvas) return;
+    const W = huCanvas.offsetWidth || 165;
+    const H = 60;
+    huCanvas.width  = W;
+    huCanvas.height = H;
+    const ctx = huCanvas.getContext('2d');
+
+    // 嘗試從 viewer canvas 取得像素分布
+    const vCanvas = this.viewer?.canvas;
+    let hist = null;
+    if (vCanvas && this.viewer?.imgLoaded) {
+      try {
+        const vCtx = vCanvas.getContext('2d');
+        const iw = vCanvas.width, ih = vCanvas.height;
+        if (iw > 0 && ih > 0) {
+          const imgData = vCtx.getImageData(0, 0, iw, ih);
+          const d = imgData.data;
+          hist = new Float32Array(256);
+          for (let i = 0; i < d.length; i += 4) {
+            // 只計算非純黑背景區域（viewer 背景為 (0,0,0)）
+            const r = d[i], g = d[i+1], b = d[i+2];
+            // 灰階：viewer 輸出 MONOCHROME，R=G=B
+            if (r > 2 || g > 2 || b > 2) {
+              hist[r]++;
+            }
+          }
+        }
+      } catch(e) { hist = null; }
+    }
+
+    ctx.clearRect(0,0,W,H);
+
+    if (!hist) {
+      // 佔位文字
+      ctx.fillStyle = '#1e1e1e';
+      ctx.fillRect(0,0,W,H);
+      ctx.fillStyle = '#555';
+      ctx.font = '9px monospace';
+      ctx.textAlign = 'center';
+      ctx.fillText('影像載入後產生', W/2, H/2+3);
+      return;
+    }
+
+    const maxH = Math.max(...hist, 1);
+
+    // 冷→暖色階（對應鉛衣：低亮度=高密度鉛，高亮度=低密度破洞）
+    const stops = [
+      [0,   '#c62828'],   // 暗(高密度鉛) → 紅
+      [0.15,'#ff7043'],
+      [0.3, '#ffca28'],
+      [0.5, '#66bb6a'],   // 中密度組織 → 綠
+      [0.65,'#26a69a'],
+      [0.8, '#0288d1'],
+      [1,   '#1a237e'],   // 亮(低密度空氣/破洞) → 藍
+    ];
+    function huColor(t) {
+      let lo = stops[0], hi = stops[stops.length-1];
+      for (let i = 1; i < stops.length; i++) {
+        if (stops[i][0] >= t) { hi = stops[i]; lo = stops[i-1]; break; }
+      }
+      const f = (t - lo[0]) / ((hi[0] - lo[0]) || 1);
+      const pr=parseInt(lo[1].slice(1,3),16), pg=parseInt(lo[1].slice(3,5),16), pb=parseInt(lo[1].slice(5,7),16);
+      const nr=parseInt(hi[1].slice(1,3),16), ng=parseInt(hi[1].slice(3,5),16), nb=parseInt(hi[1].slice(5,7),16);
+      return `rgb(${Math.round(pr+(nr-pr)*f)},${Math.round(pg+(ng-pg)*f)},${Math.round(pb+(nb-pb)*f)})`;
+    }
+
+    const step = 256 / W;
+    for (let x = 0; x < W; x++) {
+      const binStart = Math.floor(x * step);
+      const binEnd   = Math.floor((x+1) * step);
+      let sum = 0;
+      for (let b = binStart; b < binEnd && b < 256; b++) sum += hist[b];
+      const avg = binEnd > binStart ? sum / (binEnd - binStart) : sum;
+      const barH = Math.max(1, Math.round((avg / maxH) * H));
+      ctx.fillStyle = huColor(x / W);
+      ctx.fillRect(x, H - barH, 1, barH);
+    }
+
+    // WC / WW 位置標記（兩條垂直線）
+    const wc = meta.WindowCenter, ww = meta.WindowWidth;
+    if (wc !== undefined && ww !== undefined) {
+      const loX = Math.round(Math.max(0, ((wc - ww/2) / 255)) * W);
+      const hiX = Math.round(Math.min(W, ((wc + ww/2) / 255)) * W);
+      ctx.strokeStyle = 'rgba(255,255,255,0.5)';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2,2]);
+      ctx.beginPath(); ctx.moveTo(loX, 0); ctx.lineTo(loX, H); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(hiX, 0); ctx.lineTo(hiX, H); ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // 文字標籤
+    ctx.fillStyle = 'rgba(255,255,255,0.5)';
+    ctx.font = '8px monospace';
+    ctx.textAlign = 'left';  ctx.fillText('暗', 2, H-2);
+    ctx.textAlign = 'right'; ctx.fillText('亮', W-2, H-2);
+  }
 
   _setMsg(t)  { const e=document.getElementById('canvas-msg'); if(e){e.textContent=t;e.style.display=t?'':'none';} }
   _showFAB()  { const g=document.getElementById('fab-group'); if(g)g.style.display='flex'; }
