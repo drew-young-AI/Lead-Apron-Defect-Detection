@@ -80,6 +80,21 @@ def save(file_id: str, data: Dict[str, Any]) -> bool:
     data["version"]  = version
     data["saved_at"] = saved_at
 
+    # ── annotator history ────────────────────────────────────────────────
+    annotator = data.get("annotator", "").strip() or "未指定"
+    hist = existing.get("annotator_history", [])
+    
+    # 限制歷程長度避免 JSON 過度膨脹 (例如最多保留最後 100 筆)
+    hist.append({
+        "annotator": annotator,
+        "saved_at": saved_at,
+        "action": f"儲存標記 ({len(data.get('annotations', []))} 個)"
+    })
+    if len(hist) > 100:
+        hist = hist[-100:]
+        
+    data["annotator_history"] = hist
+
     try:
         _atomic_write(_ann_path(file_id), data)
 

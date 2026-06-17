@@ -58,6 +58,11 @@ class DicomViewer {
     this._wwSX   = 0;  this._wwSY   = 0;
     this._wwSWC  = 0;  this._wwSWW  = 4096;
 
+    // ── middle-drag (wheel) windowing ────────────────────────────────
+    this._wheelDrag = false;
+    this._wheelSX   = 0;  this._wheelSY   = 0;
+    this._wheelSWC  = 0;  this._wheelSWW  = 4096;
+
     // ── tool delegate (set by ToolManager) ───────────────────────────
     this.currentTool = 'box';
     this.activeTool  = null;
@@ -361,7 +366,28 @@ class DicomViewer {
     const fs = 12 / this.scale;
     ctx.font = `${fs}px monospace`;
     ctx.fillStyle = clr;
-    ctx.fillText(label, cx - ctx.measureText(label).width / 2, cy + fs / 3);
+    
+    // 計算不規則形狀的長寬
+    const xs = pts.map(p => p[0]);
+    const ys = pts.map(p => p[1]);
+    const wPx = Math.max(...xs) - Math.min(...xs);
+    const hPx = Math.max(...ys) - Math.min(...ys);
+
+    let dimText = `${Math.round(wPx)}×${Math.round(hPx)} px`;
+    const ps = this.currentMeta?.PixelSpacing;
+    if (ps && ps.length >= 2) {
+      const wMm = wPx * ps[1];
+      const hMm = hPx * ps[0];
+      dimText = `${wMm.toFixed(1)}×${hMm.toFixed(1)} mm`;
+    }
+
+    // 繪製類別標籤與長寬尺寸
+    ctx.fillText(label, cx - ctx.measureText(label).width / 2, cy - 2 / this.scale);
+    
+    const fsSmall = 9.5 / this.scale;
+    ctx.font = `${fsSmall}px monospace`;
+    ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+    ctx.fillText(dimText, cx - ctx.measureText(dimText).width / 2, cy + fsSmall + 1 / this.scale);
   }
 
   _drawBox(ctx, x, y, w, h, stroke, fill, sel, label) {
@@ -372,7 +398,16 @@ class DicomViewer {
     const fs = 12 / this.scale;
     ctx.font = `${fs}px monospace`;
     ctx.fillStyle = stroke;
-    ctx.fillText(label, x + 2/this.scale, y - 3/this.scale);
+
+    let dimText = "";
+    const ps = this.currentMeta?.PixelSpacing;
+    if (ps && ps.length >= 2) {
+      const wMm = w * ps[1];
+      const hMm = h * ps[0];
+      dimText = ` (${wMm.toFixed(1)}×${hMm.toFixed(1)} mm)`;
+    }
+    const fullLabel = label + dimText;
+    ctx.fillText(fullLabel, x + 2/this.scale, y - 3/this.scale);
 
     if (sel) {
       const hs = 5 / this.scale;
@@ -416,7 +451,18 @@ class DicomViewer {
     const ip = this.screenToImage(sx, sy);
     try { console.debug('[Viewer._onDown]', { button: e.button, sx, sy, ip, currentTool: this.currentTool }); } catch(e){}
 
-    if (e.button === 1 || (e.button === 0 && (this.currentTool === 'pan' || e.altKey))) {
+    if (e.button === 1) {
+      e.preventDefault();
+      this._wheelDrag = true;
+      this._wheelSX   = sx;
+      this._wheelSY   = sy;
+      this._wheelSWC  = this.wc;
+      this._wheelSWW  = this.ww;
+      this.canvas.style.cursor = 'crosshair';
+      return;
+    }
+
+    if (e.button === 0 && (this.currentTool === 'pan' || e.altKey)) {
       this.isPanning = true;
       this.panLastX  = sx; this.panLastY = sy;
       this.canvas.style.cursor = 'grabbing';
@@ -443,6 +489,15 @@ class DicomViewer {
     // Update status bar via app
     if (window._app) window._app.updatePointer(Math.round(ip.x), Math.round(ip.y));
 
+    if (this._wheelDrag) {
+      // 左右移動 (sx - this._wheelSX) 調整 contrast (Window Width, WW)
+      // 上下移動 (sy - this._wheelSY) 調整 center (Window Center, WC)
+      const newWW = Math.max(1, this._wheelSWW + (sx - this._wheelSX) * 4);
+      const newWC = this._wheelSWC + (sy - this._wheelSY) * 2;
+      if (window._app) window._app.updateWindowFromDrag(newWC, newWW);
+      return;
+    }
+
     if (this.isPanning) {
       this.offsetX += sx - this.panLastX;
       this.offsetY += sy - this.panLastY;
@@ -464,6 +519,12 @@ class DicomViewer {
     const { sx, sy } = this._pos(e);
     const ip = this.screenToImage(sx, sy);
 
+    if (this._wheelDrag) {
+      if (e.button === 1) e.preventDefault();
+      this._wheelDrag = false;
+      this.canvas.style.cursor = '';
+      return;
+    }
     if (this.isPanning) {
       this.isPanning = false;
       this.canvas.style.cursor = '';

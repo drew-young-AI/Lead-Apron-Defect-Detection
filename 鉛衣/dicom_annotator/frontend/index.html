@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <title>DICOM 缺陷標記</title>
-  <link rel="stylesheet" href="css/style.css">
+  <link rel="stylesheet" href="css/style.css?v=202606171552">
 </head>
 <body>
 <div id="app">
@@ -18,6 +18,10 @@
       <span id="prog-text">0 / 0</span>
     </div>
     <div class="hdr-right">
+      <div style="display: flex; align-items: center; gap: 4px; margin-right: 8px;">
+        <span style="font-size: 11.5px; color: var(--dim); white-space: nowrap;">✍ 標註者:</span>
+        <input id="annotator-input" type="text" placeholder="姓名..." style="width: 90px; height: 27px; padding: 0 8px; border: 1px solid var(--b2); border-radius: 5px; background: var(--bg2); color: var(--tx); font-size: 12px; outline: none; transition: border-color .15s;">
+      </div>
       <button id="save-btn" class="btn-save" disabled>💾 儲存</button>
       <button id="delete-current-btn" class="btn-icon" title="刪除當前影像 (Shift+Delete)" style="color:#ff5252; margin-right: 4px;">🗑</button>
       <button id="settings-btn" class="btn-icon" title="設定">⚙</button>
@@ -137,13 +141,26 @@
 
     <aside id="right">
 
-      <!-- ① 缺陷類別選擇 -->
-      <div class="rp-top">
-        <label class="rp-lbl">缺陷類別</label>
-        <select id="defect-class">
-          <option value="hole">破洞（圓形）</option>
-          <option value="crack">裂痕（線條型）</option>
-        </select>
+      <!-- ① 防護具部位與缺陷類別選擇 -->
+      <div class="rp-top" style="flex-direction: column; gap: 8px;">
+        <div style="width: 100%;">
+          <label class="rp-lbl">防護具部位</label>
+          <select id="apron-part-class" style="width: 100%; margin-top: 4px;">
+            <option value="none">未指定/整件</option>
+            <option value="cap">鉛帽</option>
+            <option value="neck">鉛頸</option>
+            <option value="vest">鉛衣(半身)</option>
+            <option value="skirt">鉛裙</option>
+            <option value="suit">鉛衣(連身)</option>
+          </select>
+        </div>
+        <div style="width: 100%;">
+          <label class="rp-lbl">缺陷類別</label>
+          <select id="defect-class" style="width: 100%; margin-top: 4px;">
+            <option value="hole">破洞（圓形）</option>
+            <option value="crack">裂痕（線條型）</option>
+          </select>
+        </div>
       </div>
 
       <!-- ② 鉛衣資訊 Panel（折疊） -->
@@ -154,9 +171,9 @@
         <div class="info-panel-body" id="apron-info-body">
           <div class="info-row"><span class="info-key">鉛衣批次</span><span class="info-val" id="meta-patient-name">–</span></div>
           <div class="info-row"><span class="info-key">件　　號</span><span class="info-val" id="meta-series-desc">–</span></div>
-          <div class="info-row"><span class="info-key">管理編號</span><span class="info-val" id="meta-lead-property-no" style="font-weight:bold;color:#ffca28">–</span></div>
-          <div class="info-row"><span class="info-key">鉛衣部位</span><span class="info-val" id="meta-lead-part-type" style="color:#66bb6a">–</span></div>
-          <div class="info-row"><span class="info-key">檢測狀態</span><span class="info-val" id="meta-lead-status">–</span></div>
+          <div class="info-row" style="display:none"><span class="info-key">管理編號</span><span class="info-val" id="meta-lead-property-no" style="font-weight:bold;color:#ffca28">–</span></div>
+          <div class="info-row" style="display:none"><span class="info-key">鉛衣部位</span><span class="info-val" id="meta-lead-part-type" style="color:#66bb6a">–</span></div>
+          <div class="info-row" style="display:none"><span class="info-key">檢測狀態</span><span class="info-val" id="meta-lead-status">–</span></div>
           <div class="info-row"><span class="info-key">掃描日期</span><span class="info-val" id="meta-study-date">–</span></div>
           <div class="info-row"><span class="info-key">協議版本</span><span class="info-val" id="meta-protocol">–</span></div>
           <div class="info-row"><span class="info-key">像素大小</span><span class="info-val" id="meta-pixel-spacing">–</span></div>
@@ -208,9 +225,25 @@
       </div>
 
       <!-- ⑥ 影像備註 -->
-      <div class="rp-notes">
+      <div class="rp-notes" style="display: flex; flex-direction: column; gap: 6px;">
         <label class="rp-lbl">影像備註 (協同提醒)</label>
-        <textarea id="image-notes" placeholder="在此輸入備註，讓其他協同人員可以相互提醒..."></textarea>
+        <div style="display: flex; gap: 4px;">
+          <input id="new-note-input" type="text" placeholder="輸入備註留言..." style="flex: 1; height: 26px; padding: 0 6px; border: 1px solid var(--b2); border-radius: 4px; background: var(--bg3); color: var(--tx);">
+          <button id="add-note-btn" class="tb-btn" style="height: 26px; padding: 0 8px;" title="新增備註">送出</button>
+        </div>
+        <div id="notes-history-list" style="max-height: 120px; overflow-y: auto; background: var(--bg3); border-radius: 4px; padding: 6px; display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--b1); font-size: 11px;">
+          <!-- 歷程留言將渲染於此 -->
+        </div>
+        <!-- 隱藏原備註欄位以防萬一，但我們全權接管它 -->
+        <textarea id="image-notes" style="display:none"></textarea>
+      </div>
+
+      <!-- ⑦ 標註歷程 -->
+      <div class="rp-notes" style="margin-top: 10px;">
+        <label class="rp-lbl">標註歷程</label>
+        <div id="annotator-history-list" style="max-height: 100px; overflow-y: auto; background: var(--bg3); border-radius: 4px; padding: 6px; font-size: 10.5px; color: var(--dim); display: flex; flex-direction: column; gap: 4px; border: 1px solid var(--b1);">
+          <!-- 標註歷程紀錄將渲染於此 -->
+        </div>
       </div>
 
     </aside>
@@ -230,10 +263,10 @@
   <div id="toast" class="toast" style="display:none"></div>
 </div>
 
-<script src="js/api.js"></script>
-<script src="js/viewer.js"></script>
-<script src="js/tools.js"></script>
-<script src="js/annotations.js"></script>
-<script src="js/main.js"></script>
+<script src="js/api.js?v=202606171552"></script>
+<script src="js/viewer.js?v=202606171552"></script>
+<script src="js/tools.js?v=202606171552"></script>
+<script src="js/annotations.js?v=202606171552"></script>
+<script src="js/main.js?v=202606171552"></script>
 </body>
 </html>

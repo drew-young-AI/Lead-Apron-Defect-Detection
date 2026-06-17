@@ -195,8 +195,47 @@ async def upload_dicom(file: UploadFile = File(...)):
 
 @router.get("/uploaded")
 def list_uploaded():
-    """List all files in the upload index (newest first)."""
-    return {"files": db.list_all_files()}
+    """List all files in the upload index (newest first) with cached DICOM metadata."""
+    files = db.list_all_files()
+    enriched = []
+    for f in files:
+        f_dict = dict(f)
+        path = f_dict["path"]
+        meta = {}
+        try:
+            # Try loading from cache
+            data = _load_cached(path)
+            meta = data["metadata"]
+        except Exception:
+            try:
+                # If cache miss, read DICOM file header directly
+                data = reader.load(str(resolve_path(path)))
+                meta = data["metadata"]
+            except Exception:
+        # ── 載入標註文件以提取標註者歷程與留言 ─────────────────────────
+        try:
+            from ..core import annotation_store as store
+            ann_doc = store.load(f_dict["file_id"])
+            if ann_doc:
+                hist = ann_doc.get("annotator_history", [])
+                comments = ann_doc.get("comments", [])
+                # 彙整所有參與過標記或留言的標註者名單
+                annotators = list(set(
+                    [h.get("annotator") for h in hist if h.get("annotator")] +
+                    [c.get("annotator") for c in comments if c.get("annotator")]
+                ))
+                # 舊標註防呆：若有標註或舊備註但無標註者紀錄，預設為 "16724"
+                if not annotators and (ann_doc.get("annotations") or ann_doc.get("notes")):
+                    annotators = ["16724"]
+                meta["Annotators"] = annotators
+                meta["annotator_history"] = hist
+                meta["comments"] = comments
+        except Exception:
+            pass
+
+        f_dict["metadata"] = meta
+        enriched.append(f_dict)
+    return {"files": enriched}
 
 
 @router.get("/annotated_paths")

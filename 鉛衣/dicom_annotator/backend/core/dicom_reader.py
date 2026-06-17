@@ -121,11 +121,13 @@ class DicomReader:
             "RescaleType":  tag("RescaleType"),
         }
 
-        # ── 關聯 Excel 鉛衣台帳資訊 ────────────────────────────────────
+        # ── 關聯 Excel 鉛衣台帳資訊 [暫時停用 - 僅保留規則以供日後啟用] ──────────
         lead_part_type = "–"
         lead_property_no = "–"
         lead_status = "–"
         
+        # 為了讓資訊更有信服力，目前只呈現純 DICOM 資訊。保留以下配對規則：
+        """
         master_json_path = Path(__file__).parent.parent.parent / "data" / "lead_master.json"
         if master_json_path.exists():
             try:
@@ -160,7 +162,7 @@ class DicomReader:
                     lead_status = matched_data.get("status", "–")
             except Exception as e:
                 print(f"Error matching lead master: {e}")
-                
+        """
         metadata["LeadPartType"] = lead_part_type
         metadata["LeadPropertyNo"] = lead_property_no
         metadata["LeadStatus"] = lead_status

@@ -26,6 +26,9 @@ class AnnotationDoc(BaseModel):
     dicom_meta:  Optional[Dict[str, Any]] = {}
     image_info:  Optional[Dict[str, Any]] = {}
     notes:       Optional[str] = ""
+    annotator:   Optional[str] = ""
+    comments:    Optional[List[Dict[str, Any]]] = []
+    annotator_history: Optional[List[Dict[str, Any]]] = []
 
 
 class HistoryEntry(BaseModel):

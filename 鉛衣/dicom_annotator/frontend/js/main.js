@@ -52,6 +52,68 @@ class AppController {
   async _boot() {
     this._bindAll();
     this._activateTool('box');
+
+    // 載入 localStorage 中的標註者姓名
+    const annotatorInput = document.getElementById('annotator-input');
+    if (annotatorInput) {
+      // 預設為 16724
+      const saved = localStorage.getItem('annotator') || '16724';
+      annotatorInput.value = saved;
+      localStorage.setItem('annotator', saved);
+      annotatorInput.addEventListener('input', () => {
+        let val = annotatorInput.value;
+        // 1. 全形英數與符號轉半形
+        let clean = val.replace(/[\uFF01-\uFF5E]/g, function(ch) {
+          return String.fromCharCode(ch.charCodeAt(0) - 0xFEE0);
+        });
+        // 2. 轉小寫
+        clean = clean.toLowerCase();
+        // 3. 去除所有半形、全形及換行空白
+        clean = clean.replace(/[\s\u3000]+/g, '');
+        
+        if (annotatorInput.value !== clean) {
+          const start = annotatorInput.selectionStart;
+          annotatorInput.value = clean;
+          try { annotatorInput.setSelectionRange(start, start); } catch(e){}
+        }
+        localStorage.setItem('annotator', clean);
+      });
+    }
+
+    // 綁定「影像備註」新增留言按鈕與 Enter 鍵發送
+    const addNoteBtn = document.getElementById('add-note-btn');
+    const newNoteInput = document.getElementById('new-note-input');
+    if (addNoteBtn && newNoteInput) {
+      const submitNote = () => {
+        const text = newNoteInput.value.trim();
+        if (!text) return;
+        const annotator = annotatorInput?.value.trim() || '未指定';
+        
+        // 新增留言至 annMgr 的 comments 陣列中
+        this.annMgr.comments = this.annMgr.comments || [];
+        this.annMgr.comments.push({
+          annotator: annotator,
+          text: text,
+          created_at: new Date().toISOString()
+        });
+        
+        // 渲染更新
+        this.annMgr.renderCommentsAndHistory();
+        newNoteInput.value = '';
+        
+        // 標記為 dirty，以供儲存
+        this.annMgr.dirty = true;
+        this.annMgr._notifyDirty();
+      };
+      
+      addNoteBtn.addEventListener('click', submitNote);
+      newNoteInput.addEventListener('keydown', e => {
+        if (e.key === 'Enter') {
+          submitNote();
+        }
+      });
+    }
+
     await this._loadUploaded();
     await this._loadHistory();
   }
@@ -172,18 +234,26 @@ class AppController {
     }
   }
 
-  _addFile(path, flag='', originalName='') {
+  _addFile(path, flag='', originalName='', metadata=null) {
     if (this.files.some(f=>f.path===path)) return;
     const fname = originalName || path.split(/[/\\]/).pop();
     const el    = document.createElement('div');
     el.className = 'fi'; el.dataset.path = path;
     const dot  = Object.assign(document.createElement('span'),{className:'fi-dot'+(flag==='dup'?' dup':'')});
-    // 兩行標籤容器
+    
+    // 三個獨立欄位容器（檔名已刪除）
     const labelWrap = document.createElement('div');
     labelWrap.className = 'fi-label-wrap';
-    const idLine  = Object.assign(document.createElement('span'),{className:'fi-label-id',textContent:fname,title:path});
-    const subLine = Object.assign(document.createElement('span'),{className:'fi-label-sub',textContent:''});
-    labelWrap.append(idLine, subLine);
+    const seriesLine = Object.assign(document.createElement('div'),{className:'fi-label-series',textContent:fname,title:path});
+    const studyLine  = Object.assign(document.createElement('div'),{className:'fi-label-study',textContent:'–'});
+    const dateLine   = Object.assign(document.createElement('div'),{className:'fi-label-date',textContent:'–'});
+    labelWrap.append(seriesLine, studyLine, dateLine);
+    
+    // 如果在加載時後端直接有回傳 metadata，直接調用內置寫入，完美替代檔名
+    if (metadata) {
+      this._writeLabelText(labelWrap, path, metadata);
+    }
+    
     const countSpan = Object.assign(document.createElement('span'), {className:'fi-ann-count', textContent:'0'});
     const noteSpan = Object.assign(document.createElement('span'), {className:'fi-note-status', textContent:''});
     el.append(dot, labelWrap, countSpan, noteSpan);
@@ -206,33 +276,29 @@ class AppController {
     return {path, el};
   }
 
-  /** 在取得 metadata 後更新左側列表的 ID 行 & 副標題行 */
-  _updateFileLabel(path, meta) {
-    const entry = this.files.find(f => f.path === path);
-    if (!entry) return;
-    const el = entry.el;
-    
-    // 1. 主 ID 行：[Series Description] [管理編號] (Study Description)
+  /** 共用的 label 文字寫入方法 */
+  _writeLabelText(containerEl, path, meta) {
+    if (!containerEl || !meta) return;
     const seriesDesc = meta.SeriesDescription && meta.SeriesDescription !== '–' ? meta.SeriesDescription : '';
     const studyDesc = meta.StudyDescription && meta.StudyDescription !== '–' ? meta.StudyDescription : '';
     const propNo = meta.LeadPropertyNo && meta.LeadPropertyNo !== '–' ? meta.LeadPropertyNo : '';
     
-    let primaryText = '';
-    let leadPart = seriesDesc;
+    // 1. Series Description 欄位 (合併管理編號)
+    let seriesText = seriesDesc;
     if (propNo) {
-      leadPart = leadPart ? `${leadPart} ${propNo}` : propNo;
+      seriesText = seriesText ? `${seriesText} ${propNo}` : propNo;
     }
-    
-    if (leadPart && studyDesc) {
-      primaryText = `${leadPart} (${studyDesc})`;
-    } else {
-      primaryText = leadPart || studyDesc || meta.PatientID || meta.StudyID || path.split('/').pop().split('\\').pop() || '';
+    if (!seriesText) {
+      seriesText = meta.PatientID || meta.StudyID || path.split('/').pop().split('\\').pop() || '–';
     }
+    const seriesEl = containerEl.querySelector('.fi-label-series');
+    if (seriesEl) { seriesEl.textContent = seriesText; seriesEl.title = path; }
     
-    const idEl = el.querySelector('.fi-label-id');
-    if (idEl && primaryText) { idEl.textContent = primaryText; idEl.title = path; }
+    // 2. Study Description 欄位
+    const studyEl = containerEl.querySelector('.fi-label-study');
+    if (studyEl) studyEl.textContent = studyDesc || '–';
     
-    // 2. 副標題行：只換上 "Series Date"
+    // 3. Series Date 欄位
     const rawDate = meta.SeriesDate || meta.StudyDate || meta.AcquisitionDate || '';
     let dateStr = '–';
     if (rawDate && rawDate.length === 8) {
@@ -240,15 +306,40 @@ class AppController {
     } else if (rawDate) {
       dateStr = rawDate;
     }
-    
-    const subEl = el.querySelector('.fi-label-sub');
-    if (subEl) subEl.textContent = dateStr;
+    const dateEl = containerEl.querySelector('.fi-label-date');
+    if (dateEl) dateEl.textContent = dateStr;
+
+    // 4. Annotators 欄位 (標註者名單)
+    let annotatorsEl = containerEl.querySelector('.fi-label-annotators');
+    const annotators = meta.Annotators || [];
+    if (annotators && annotators.length > 0) {
+      if (!annotatorsEl) {
+        annotatorsEl = document.createElement('div');
+        annotatorsEl.className = 'fi-label-annotators';
+        annotatorsEl.style = 'font-size:9.5px; color:#ffb74d; overflow:hidden; text-overflow:ellipsis; white-space:nowrap; line-height:1.2; font-family:monospace; margin-top:1px;';
+        const wrap = containerEl.classList.contains('fi-label-wrap') ? containerEl : containerEl.querySelector('.fi-label-wrap');
+        if (wrap) wrap.appendChild(annotatorsEl);
+      }
+      annotatorsEl.textContent = `✍ 標註: ${annotators.join(', ')}`;
+      annotatorsEl.style.display = 'block';
+    } else if (annotatorsEl) {
+      annotatorsEl.style.display = 'none';
+    }
+  }
+
+  /** 在取得 metadata 後更新左側列表的三個獨立欄位 */
+  _updateFileLabel(path, meta) {
+    const entry = this.files.find(f => f.path === path);
+    if (!entry) return;
+    this._writeLabelText(entry.el, path, meta);
   }
 
   async _loadUploaded() {
     try {
       const {files} = await API.listUploaded();
-      (files||[]).forEach(f=>this._addFile(f.path, '', f.original_name));
+      (files||[]).forEach(f => {
+        this._addFile(f.path, '', f.original_name, f.metadata);
+      });
       this._updateCounts();
       await this._markAnnotated();
     } catch {}

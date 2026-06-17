@@ -70,21 +70,24 @@ async def test_meta_and_hu():
                 log_test("No files found in list", False)
                 return False
                 
-            # 3. Verify Left Sidebar Double-Line label format
-            print(f"{YELLOW}Step 3: Checking double-line label...{RESET}")
-            label_id_el = page.locator('.fi-label-id').nth(cnt-1)
-            label_sub_el = page.locator('.fi-label-sub').nth(cnt-1)
+            # 3. Verify Left Sidebar Three-Column label format
+            print(f"{YELLOW}Step 3: Checking three-column labels...{RESET}")
+            label_series_el = page.locator('.fi-label-series').nth(cnt-1)
+            label_study_el = page.locator('.fi-label-study').nth(cnt-1)
+            label_date_el = page.locator('.fi-label-date').nth(cnt-1)
             
-            id_text = await label_id_el.text_content()
-            sub_text = await label_sub_el.text_content()
+            series_text = await label_series_el.text_content()
+            study_text = await label_study_el.text_content()
+            date_text = await label_date_el.text_content()
             
-            print(f"   Label main line (ID/Filename): '{id_text.strip()}'")
-            print(f"   Label sub line (Dept/Date): '{sub_text.strip()}'")
+            print(f"   Label Series Description: '{series_text.strip()}'")
+            print(f"   Label Study Description : '{study_text.strip()}'")
+            print(f"   Label Series Date       : '{date_text.strip()}'")
             
-            if len(id_text.strip()) > 0:
-                log_test("Double-line primary text is non-empty", True)
+            if len(series_text.strip()) > 0:
+                log_test("Three-column primary text is non-empty", True)
             else:
-                log_test("Double-line primary text is empty!", False)
+                log_test("Three-column primary text is empty!", False)
                 
             # 4. Verify right metadata panel attributes
             print(f"{YELLOW}Step 4: Checking right-side metadata panels...{RESET}")

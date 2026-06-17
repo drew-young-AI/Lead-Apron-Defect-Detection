@@ -68,7 +68,7 @@ input,select,button{font-family:inherit;font-size:inherit}
   border-radius:10px;padding:1px 7px;font-weight:700}
 #file-list{flex:1;overflow-y:auto}
 .list-hint{font-size:11px;color:var(--dim);padding:20px 10px;text-align:center;line-height:1.8}
-.fi{display:flex;align-items:center;gap:7px;padding:6px 9px;cursor:pointer;
+.fi{display:flex;align-items:center;gap:7px;padding:5px 9px;cursor:pointer;
   border-bottom:1px solid var(--b1);transition:.12s;min-width:0}
 .fi:hover{background:var(--bg3)}
 .fi.active{background:rgba(74,158,255,.12)}
@@ -76,6 +76,12 @@ input,select,button{font-family:inherit;font-size:inherit}
 .fi-dot.done{background:var(--ok)} .fi-dot.cur{background:var(--acc)} .fi-dot.dup{background:var(--warn)}
 .fi-name{font-size:11px;color:var(--tx);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 .fi.active .fi-name{color:var(--acc)}
+/* 三個獨立欄位（Series + Study + Date） */
+.fi-label-wrap{flex:1;min-width:0;display:flex;flex-direction:column;gap:2px;overflow:hidden}
+.fi-label-series{font-size:11.5px;color:var(--tx);font-weight:700;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-family:monospace;letter-spacing:.2px}
+.fi.active .fi-label-series{color:var(--acc)}
+.fi-label-study{font-size:9.5px;color:#90caf9;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2}
+.fi-label-date{font-size:9px;color:var(--dim);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;line-height:1.2;font-family:monospace}
 .fi-dup{font-size:9px;color:var(--warn);background:rgba(245,166,35,.15);border-radius:3px;padding:1px 4px;flex-shrink:0}
 .fi-ann-count{font-size:10px;color:var(--dim);min-width:40px;text-align:right;flex-shrink:0}
 .fi-note-status{min-width:20px;text-align:center;flex-shrink:0;font-size:11px}
@@ -99,7 +105,7 @@ input,select,button{font-family:inherit;font-size:inherit}
   white-space:nowrap;transition:.12s;flex-shrink:0}
 .tb-btn:hover{border-color:var(--acc);color:var(--tx)}
 .tb-lbl{font-size:10px;color:var(--dim);white-space:nowrap}
-#wc-slider,#ww-slider{width:80px;accent-color:var(--acc);cursor:pointer;flex-shrink:0}
+#wc-slider,#ww-slider{width:180px;accent-color:var(--acc);cursor:pointer;flex-shrink:0}
 
 #canvas-wrap{flex:1;position:relative;overflow:hidden;background:#000}
 #viewer-canvas{display:block}
@@ -159,7 +165,7 @@ input,select,button{font-family:inherit;font-size:inherit}
 
 /* ── RIGHT ─────────────────────────────────────────────────────── */
 #right{width:var(--R);background:var(--bg2);border-left:1px solid var(--b1);
-  display:flex;flex-direction:column;overflow:hidden;flex-shrink:0}
+  display:flex;flex-direction:column;overflow-y:auto;overflow-x:hidden;flex-shrink:0}
 .rp-top{padding:10px;border-bottom:1px solid var(--b1);flex-shrink:0}
 .rp-lbl{display:block;font-size:10px;color:var(--dim);text-transform:uppercase;
   letter-spacing:.5px;margin-bottom:5px}
@@ -169,22 +175,52 @@ select{width:100%;height:26px;background:var(--bg3);border:1px solid var(--b2);
   color:var(--tx);border-radius:4px;padding:0 6px;font-size:12px}
 select:focus{outline:none;border-color:var(--acc)}
 
-.rp-mid{flex:1;overflow:hidden;display:flex;flex-direction:column;padding:10px}
+/* Info Panel (折疊式) */
+.info-panel{border-bottom:1px solid var(--b1);flex-shrink:0}
+.info-panel-hdr{
+  display:flex;align-items:center;justify-content:space-between;
+  padding:7px 10px;cursor:pointer;user-select:none;
+  font-size:11px;font-weight:600;color:var(--dim);
+  list-style:none;transition:color .15s
+}
+.info-panel-hdr::-webkit-details-marker{display:none}
+.info-panel-hdr:hover{color:var(--tx)}
+.info-panel[open] .panel-chevron{transform:rotate(180deg)}
+.panel-chevron{transition:transform .2s;font-size:10px;color:var(--dim2)}
+.info-panel-body{padding:6px 10px 10px;display:flex;flex-direction:column;gap:4px}
+.info-row{display:flex;align-items:baseline;gap:5px;min-width:0}
+.info-key{font-size:10px;color:var(--dim);flex-shrink:0;width:60px;line-height:1.6}
+.info-val{font-size:11px;color:var(--tx);font-family:monospace;
+  overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+
+/* HU Heatmap Canvas */
+.hu-canvas{width:100%;height:60px;border-radius:4px;border:1px solid var(--b2);
+  display:block;background:var(--bg3);image-rendering:pixelated}
+.hu-legend{display:flex;align-items:center;gap:5px;margin-top:5px}
+.hu-leg-lo,.hu-leg-hi{font-size:9px;color:var(--dim);white-space:nowrap}
+.hu-grad{flex:1;height:6px;border-radius:3px;
+  background:linear-gradient(to right,#1a237e,#1565c0,#0288d1,#00acc1,#26a69a,#66bb6a,#ffca28,#ff7043,#c62828)}
+
+/* Annotation list */
+.rp-mid{flex-shrink:0;padding:10px;border-bottom:1px solid var(--b1)}
 .ann-count{font-size:11px;color:var(--ok);background:rgba(45,206,106,.12);
   border-radius:10px;padding:1px 8px;font-weight:700}
 .del-all-btn{height:18px;padding:0 6px;background:transparent;
   border:1px solid var(--err);border-radius:3px;color:var(--err);font-size:10px;cursor:pointer}
-#ann-list{flex:1;overflow-y:auto;list-style:none;margin-top:2px}
-.ann-empty{font-size:11px;color:var(--dim);padding:16px 0;text-align:center;line-height:1.8}
-.ann-item{display:flex;align-items:center;gap:6px;padding:5px 8px;border-radius:4px;
+#ann-list{list-style:none;margin-top:4px;max-height:200px;overflow-y:auto}
+.ann-empty{font-size:11px;color:var(--dim);padding:12px 0;text-align:center;line-height:1.8}
+.ann-item{display:flex;align-items:flex-start;gap:6px;padding:5px 8px;border-radius:4px;
   cursor:pointer;border:1px solid transparent;margin-bottom:2px;transition:.1s}
 .ann-item:hover{background:var(--bg3)}
 .ann-item.selected{background:rgba(74,158,255,.12);border-color:var(--acc)}
-.ann-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
-.ann-lbl{flex:1;font-size:11px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.ann-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0;margin-top:3px}
+.ann-lbl{flex:1;font-size:11px;line-height:1.45;overflow:hidden}
+.ann-lbl-title{display:block;white-space:nowrap;text-overflow:ellipsis;overflow:hidden}
+.ann-lbl-mm{display:block;font-size:10px;color:var(--dim);font-family:monospace}
 .ann-del{visibility:hidden;background:transparent;border:none;color:var(--err);
-  cursor:pointer;font-size:12px;padding:0 2px}
+  cursor:pointer;font-size:12px;padding:0 2px;flex-shrink:0}
 .ann-item:hover .ann-del{visibility:visible}
+
 
 /* ── DRAWER ────────────────────────────────────────────────────── */
 .backdrop{position:fixed;inset:0;background:rgba(0,0,0,.55);z-index:40}

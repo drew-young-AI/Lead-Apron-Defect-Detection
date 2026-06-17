@@ -23,6 +23,8 @@ class AnnotationManager {
     };
     this._listEl  = document.getElementById('ann-list');
     this._countEl = document.getElementById('ann-count');
+    this.comments = [];
+    this.annotator_history = [];
 
     // 監聽類別下拉選單變更，以支援編修選中標註的類別
     const selectEl = document.getElementById('defect-class');
@@ -32,6 +34,19 @@ class AnnotationManager {
         if (selectedId) {
           const newClass = selectEl.value;
           this.update(selectedId, { class: newClass });
+          this.v.draw();
+        }
+      });
+    }
+
+    // 監聽防護具部位下拉選單變更，以支援編修選中標註的部位
+    const partSelectEl = document.getElementById('apron-part-class');
+    if (partSelectEl) {
+      partSelectEl.addEventListener('change', () => {
+        const selectedId = this.v.selectedId;
+        if (selectedId) {
+          const newPart = partSelectEl.value;
+          this.update(selectedId, { apron_part: newPart });
           this.v.draw();
         }
       });
@@ -61,6 +76,10 @@ class AnnotationManager {
     return document.getElementById('defect-class')?.value || 'defect';
   }
 
+  _currentApronPart() {
+    return document.getElementById('apron-part-class')?.value || 'none';
+  }
+
   // ── CRUD ────────────────────────────────────────────────────────────────
 
   add(partial) {
@@ -69,6 +88,7 @@ class AnnotationManager {
     const ann = {
       id:       this._uid(),
       class:    partial.class || this._currentClass(),
+      apron_part: partial.apron_part || this._currentApronPart(),
       type:     partial.type  || 'box',
       x, y, w, h,
       polygon:  partial.polygon || null,
@@ -123,11 +143,17 @@ class AnnotationManager {
     if (id) {
       const ann = this.list.find(a => a.id === id);
       if (ann) {
+        // 連動類別下拉選單
         const selectEl = document.getElementById('defect-class');
         if (selectEl) {
           let val = ann.class;
           if (val === 'defect' || val === 'void') val = 'hole';
           selectEl.value = val;
+        }
+        // 連動防護具部位下拉選單
+        const partSelectEl = document.getElementById('apron-part-class');
+        if (partSelectEl) {
+          partSelectEl.value = ann.apron_part || 'none';
         }
       }
     }
@@ -150,6 +176,7 @@ class AnnotationManager {
     const ann = this.add({
       type:    'polygon',
       class:   this._currentClass(),
+      apron_part: this._currentApronPart(),
       x:bx, y:by, w:bw, h:bh,
       polygon: poly.map(p => [Math.round(p[0]), Math.round(p[1])]),
       bbox, auto:true,
@@ -169,15 +196,83 @@ class AnnotationManager {
 
   // ── persistence ─────────────────────────────────────────────────────────
 
+  // ── persistence ─────────────────────────────────────────────────────────
+
+  renderCommentsAndHistory() {
+    // Render comments list
+    const notesHistoryList = document.getElementById('notes-history-list');
+    if (notesHistoryList) {
+      notesHistoryList.innerHTML = '';
+      const comments = this.comments || [];
+      if (comments.length === 0) {
+        notesHistoryList.innerHTML = '<div style="color:var(--dim);text-align:center;padding:10px 0;">尚無備註留言</div>';
+      } else {
+        comments.forEach(c => {
+          const item = document.createElement('div');
+          item.style = 'border-bottom: 1px solid var(--b1); padding-bottom: 4px; display:flex; flex-direction:column; gap:2px;';
+          
+          let timeStr = '';
+          if (c.created_at) {
+            try {
+              const d = new Date(c.created_at);
+              timeStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+            } catch(e) { timeStr = c.created_at; }
+          }
+          
+          const header = document.createElement('div');
+          header.style = 'display:flex; justify-content:space-between; font-size:9.5px;';
+          header.innerHTML = `<span style="color:#ffb74d;font-weight:bold;">✍ ${c.annotator || '未指定'}</span><span style="color:var(--dim);">${timeStr}</span>`;
+          
+          const body = document.createElement('div');
+          body.style = 'color:var(--tx); padding-left: 2px; word-break: break-all;';
+          body.textContent = c.text || '';
+          
+          item.appendChild(header);
+          item.appendChild(body);
+          notesHistoryList.appendChild(item);
+        });
+      }
+    }
+
+    // Render annotator history list
+    const historyList = document.getElementById('annotator-history-list');
+    if (historyList) {
+      historyList.innerHTML = '';
+      const history = this.annotator_history || [];
+      if (history.length === 0) {
+        historyList.innerHTML = '<div style="color:var(--dim);text-align:center;padding:10px 0;">尚無修改歷程</div>';
+      } else {
+        history.forEach(h => {
+          const item = document.createElement('div');
+          item.style = 'border-bottom: 1px dashed var(--b1); padding-bottom: 2px; display:flex; justify-content:space-between;';
+          
+          let timeStr = '';
+          if (h.saved_at) {
+            try {
+              const d = new Date(h.saved_at);
+              timeStr = `${d.getMonth()+1}/${d.getDate()} ${String(d.getHours()).padStart(2,'0')}:${String(d.getMinutes()).padStart(2,'0')}`;
+            } catch(e) { timeStr = h.saved_at; }
+          }
+          item.innerHTML = `<span style="color:var(--tx);font-weight:bold;">${h.annotator || '未指定'}</span><span style="color:var(--dim); text-align:center; flex:1; padding:0 4px; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;" title="${h.action || '存檔'}">${h.action || '存檔'}</span><span style="font-size:9px;color:var(--dim2);">${timeStr}</span>`;
+          historyList.appendChild(item);
+        });
+      }
+    }
+  }
+
   async save() {
     if (!this.sopUid) return false;
+    const annotatorVal = document.getElementById('annotator-input')?.value.trim() || '未指定';
     const payload = {
       image_path: this._currentPath || '',
       dicom_meta: this._currentMeta || {},
       image_info: { width:this.v.imgW, height:this.v.imgH, wc:this.v.wc, ww:this.v.ww },
       notes: document.getElementById('image-notes')?.value || '',
+      annotator: annotatorVal,
+      comments: this.comments || [],
       annotations: this.list.map(a => ({
         id:a.id, class:a.class, type:a.type,
+        apron_part: a.apron_part || 'none',
         bbox_x:a.x, bbox_y:a.y, bbox_w:a.w, bbox_h:a.h,
         polygon:a.polygon, bbox:a.bbox,
         auto:a.auto, method:a.method,
@@ -188,6 +283,29 @@ class AnnotationManager {
       await API.saveAnnotations(this.sopUid, payload);
       this.dirty = false;
       this._notifyDirty();
+
+      // 重新載入以更新歷程與留言
+      const doc = await API.getAnnotations(this.sopUid);
+      this.comments = doc.comments || [];
+      this.annotator_history = doc.annotator_history || [];
+      this.renderCommentsAndHistory();
+
+      // 即時更新左側列表呈現的標註者名單
+      if (window._app) {
+        const annotators = Array.from(new Set(
+          (this.annotator_history || []).map(h => h.annotator).concat((this.comments || []).map(c => c.annotator))
+        )).filter(Boolean);
+        
+        const matched = window._app.files.find(f => f.path === this._currentPath);
+        if (matched) {
+          this._currentMeta = this._currentMeta || {};
+          this._currentMeta.Annotators = annotators;
+          this._currentMeta.annotator_history = this.annotator_history;
+          this._currentMeta.comments = this.comments;
+          window._app._updateFileLabel(this._currentPath, this._currentMeta);
+        }
+      }
+
       return true;
     } catch(e) { console.error('[ann] save:', e); return false; }
   }
@@ -202,6 +320,33 @@ class AnnotationManager {
       const notesEl = document.getElementById('image-notes');
       if (notesEl) notesEl.value = doc.notes || '';
 
+      // 載入留言與修改歷程
+      this.comments = doc.comments || [];
+      this.annotator_history = doc.annotator_history || [];
+
+      // 舊版備註相容移轉：若有舊備註且未曾在留言板出現過，將其自動轉為留言與歷程
+      if (doc.notes && doc.notes.trim()) {
+        const textExists = this.comments.some(c => c.text === doc.notes.trim());
+        if (!textExists) {
+          this.comments.unshift({
+            annotator: '16724',
+            text: doc.notes.trim(),
+            created_at: doc.saved_at || new Date().toISOString()
+          });
+          if (this.annotator_history.length === 0) {
+            this.annotator_history.push({
+              annotator: '16724',
+              saved_at: doc.saved_at || new Date().toISOString(),
+              action: '建立影像備註'
+            });
+          }
+          this.dirty = true;
+          this._notifyDirty();
+        }
+      }
+
+      this.renderCommentsAndHistory();
+
       this.list = (doc.annotations || []).map(a => {
         const bxRaw = a.bbox_x ?? (a.bbox ? a.bbox[0] : (a.x ?? 0));
         const byRaw = a.bbox_y ?? (a.bbox ? a.bbox[1] : (a.y ?? 0));
@@ -215,6 +360,7 @@ class AnnotationManager {
         return {
           id: a.id || this._uid(),
           class: a.class || 'defect',
+          apron_part: a.apron_part || 'none',
           type: a.type || 'polygon',
           x: bx, y: by, w: bw, h: bh,
           polygon: polygon,
@@ -223,7 +369,7 @@ class AnnotationManager {
           created: a.created || '', modified: a.modified || '',
         };
       });
-    } catch { this.list = []; }
+    } catch { this.list = []; this.comments = []; this.annotator_history = []; }
     this.dirty = false;
     this._notifyDirty();
     // Auto-select first annotation to allow immediate edit after reload
@@ -290,8 +436,13 @@ class AnnotationManager {
       const icon = ann.type === 'polygon' ? '⬟' : '▣';
       const dispNames = { hole: '破洞', void: '破洞', defect: '破洞', crack: '裂痕' };
       const dispName = dispNames[ann.class] || ann.class;
-      lbl.textContent = `${icon} ${dispName}`;
-      lbl.title = `ID: ${ann.id.slice(-8)}\nType: ${ann.type}\nMethod: ${ann.method||'manual'}\nPos: (${ann.x},${ann.y}) ${ann.w}×${ann.h}`;
+      
+      const partNames = { none: '', cap: '鉛帽', neck: '鉛頸', vest: '半身', skirt: '鉛裙', suit: '連身' };
+      const partName = partNames[ann.apron_part || 'none'] || '';
+      const partPrefix = partName ? `[${partName}] ` : '';
+      
+      lbl.textContent = `${icon} ${partPrefix}${dispName}`;
+      lbl.title = `ID: ${ann.id.slice(-8)}\nPart: ${partName || '未指定'}\nType: ${ann.type}\nMethod: ${ann.method||'manual'}\nPos: (${ann.x},${ann.y}) ${ann.w}×${ann.h}`;
 
       const del = document.createElement('button');
       del.className = 'ann-del'; del.textContent = '✕'; del.title = '刪除';
