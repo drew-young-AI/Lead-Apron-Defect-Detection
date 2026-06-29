@@ -16,7 +16,9 @@ def check_pdf_exists(pdf_path, base_dir):
     """Checks if a PDF file actually exists on disk."""
     # Resolve relative path
     abs_path = os.path.abspath(os.path.join(base_dir, pdf_path))
-    return os.path.exists(abs_path)
+    res = os.path.exists(abs_path)
+    print(f"    [Debug Path Check] path={abs_path} exists={res}")
+    return res
 
 def verify_doi_title(doi, expected_title, timeout=5):
     """Uses CrossRef API to verify if DOI matches the expected title."""
